@@ -123,7 +123,7 @@ if data.executor, err = database.New(databaseConf); err != nil {
 
 // 逻辑方法内调用
 err := r.data.executor.ExecWithRetry(ctx, func(ctx context.Context, conn *gorm.DB) error {
-	return conn.WithContext(ctx).FirstOrCreate(&address{}, address{Address: addresses[i]}).Error
+	return conn.WithContext(ctx).FirstOrCreate(&address{}, address{Address: "abcdefg"}).Error
 })
 if err != nil {
 	return err
