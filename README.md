@@ -9,7 +9,7 @@
 go get github.com/nuominmin/connection-helper
 ```
 
-## 简单示例
+## 简单示例(Mysql)
 ```go
 package database
 
@@ -100,6 +100,33 @@ func (c *Connector) Close() error {
 
 func (c *Connector) IsConnectionError(err error) bool {
 	return errors.Is(err, gorm.ErrInvalidField)
+}
+
+```
+
+```
+// 初始化
+data := &Data{}
+databaseConf := &database.Config{
+	Source:          c.Database.Source,
+	LogLevel:        c.Database.LogLevel,
+	MaxIdleConns:    c.Database.MaxIdleConns,
+	MaxOpenConns:    c.Database.MaxOpenConns,
+	ConnMaxLifetime: c.Database.ConnMaxLifetime,
+}
+
+var err error
+if data.executor, err = database.New(databaseConf); err != nil {
+	return nil, nil, err
+}
+
+
+// 逻辑方法内调用
+err := r.data.executor.ExecWithRetry(ctx, func(ctx context.Context, conn *gorm.DB) error {
+	return conn.WithContext(ctx).FirstOrCreate(&address{}, address{Address: addresses[i]}).Error
+})
+if err != nil {
+	return err
 }
 
 ```
