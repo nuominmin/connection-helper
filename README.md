@@ -104,7 +104,7 @@ func (c *Connector) IsConnectionError(err error) bool {
 
 ```
 
-```
+```go
 // 初始化
 data := &Data{}
 databaseConf := &database.Config{
