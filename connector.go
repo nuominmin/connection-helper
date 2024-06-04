@@ -2,6 +2,7 @@ package connectionhelper
 
 import (
 	"context"
+	"sync"
 )
 
 // Connector .
@@ -18,6 +19,7 @@ type RetryExecutor[T any] struct {
 	conn       T            // 连接
 	retryLimit int          // 重试限制
 	Connector  Connector[T] // 使用泛型的Connector接口
+	mu         sync.Mutex   // 锁控制并发请求
 }
 
 // New 创建一个新的RetryExecutor实例
@@ -66,6 +68,14 @@ func (r *RetryExecutor[T]) ExecWithRetry(ctx context.Context, op Operation[T]) e
 		}
 	}
 	return err // 返回最后一次的错误
+}
+
+// ExecWithLock 使用锁控制并发请求
+func (r *RetryExecutor[T]) ExecWithLock(ctx context.Context, op Operation[T]) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	return r.ExecWithRetry(ctx, op)
 }
 
 // Exec 使用提供的Connector操作
